@@ -5,7 +5,7 @@ A modern blockchain network in Rust with built-in DEX primitives as the 1st clas
 An ultra fast quic protocol based P2P network layer with support for NAT traversal, peer discovery, and message routing.
  Inspired by [iroh](https://github.com/n0-computer/awesome-iroh).
 
-## Execution layer
+## Execution Layer
 
 ### Structured Gossiping
 The structured and latency aware gossiping is a novel gossiping protocol that is designed to improve the efficiency and
@@ -17,7 +17,7 @@ designed to be resilient to network failures and can adapt to changes in the net
 As TXNs are packed by the proposers elected by the pseudo random selection, they are routed only to the proposers of the
 coming consensus instances. Without a native gossiping, the TXNs can be mined very quickly.
 
-### Block propagation
+### Block Propagation
 To extensively leverage the capacity of a distributed network, the blocks are erasure coded and propagated in a
 gossiping manner. The erasure coding is based on [Reed-Solomon](https://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction) algorithm,
 which allows the block to be reconstructed from any subset of the erasure coded pieces. It will significantly reduce
