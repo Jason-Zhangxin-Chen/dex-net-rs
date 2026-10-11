@@ -4,9 +4,45 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
+`dex-net-rs` is a Rust workspace for a modern blockchain network with built-in DEX
+primitives as first-class citizens. The design spans a QUIC-based P2P network layer, an
+execution layer with native exchange primitives (CLOB order books, asset primitives, a
+QMDB-backed state engine), and a Minimmit BFT consensus layer. `README.md` holds the
+component-level design rationale; this file covers how to work on the code.
+
+The project is in early development: the workspace currently contains a single `crypto`
+crate stub, with the documentation and CI scaffolding built out ahead of the core layers.
+
 ## Workspace layout
 
+```
+dex-net-rs/
+├── crates/              # workspace members
+│   └── crypto/          # foundational crypto crate (currently a stub)
+├── .github/workflows/   # CI (ci.yml: build+test, clippy, fmt, cargo-deny)
+├── Cargo.toml           # workspace manifest (members = ["crates/crypto"])
+├── Cargo.lock           # committed; owned by dependabot bumps
+├── clippy.toml          # lint thresholds and domain-term whitelist
+├── rustfmt.toml         # formatting: max_width 100, module reordering
+├── deny.toml            # dependency policy: sources, licenses, advisories
+├── rust-toolchain.toml  # pinned Rust 1.94.1 (edition 2024)
+├── README.md            # design overview of the network layers
+└── CLAUDE.md            # agent guidance for Claude Code (this file)
+```
+
 ## Architecture
+
+Four layers, described in detail in `README.md`:
+
+- **P2P network layer** — QUIC-based transport with NAT traversal, peer discovery, and
+  message routing (inspired by iroh).
+- **Execution layer** — structured, latency-aware gossiping; erasure-coded (Reed–Solomon)
+  block propagation; Freezer + chain databases; an optional VM; a deterministic state
+  engine built on QMDB; and native asset & exchange primitives (CLOB, RFQ, order types).
+- **Consensus layer** — Minimmit BFT (80% quorum, fast finality) with consensus messaging
+  and BLS12-381 signature aggregation.
+- **Core crate boundary** — the core crate must stay executor-agnostic: no tokio types in
+  public signatures (enforced via `#[deny(clippy::disallowed_types)]`).
 
 ## Development rules
 
