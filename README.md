@@ -1,3 +1,7 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE-MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
+[![CI](https://github.com/Jason-Zhangxin-Chen/dex-net-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/Jason-Zhangxin-Chen/dex-net-rs/actions/workflows/ci.yml)
+
 # dex-net-rs
 A modern blockchain network in Rust with built-in DEX primitives as the 1st class citizen.
 
