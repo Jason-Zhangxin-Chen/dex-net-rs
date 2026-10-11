@@ -3,7 +3,7 @@ A modern blockchain network in Rust with built-in DEX primitives as the 1st clas
 
 ## P2P Network Layer
 An ultra fast quic protocol based P2P network layer with support for NAT traversal, peer discovery, and message routing.
- Inspired by [iroh] (https://github.com/n0-computer/awesome-iroh).
+ Inspired by [iroh](https://github.com/n0-computer/awesome-iroh).
 
 ## Execution layer
 
