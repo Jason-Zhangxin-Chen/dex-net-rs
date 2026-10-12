@@ -67,6 +67,13 @@ regulated stablecoins, fungible tokens, non-fungible tokens (NFTs), and other di
 enabling a wide range of use cases such as decentralized finance (DeFi), gaming, and digital
 collectibles.
 
+### Regulation Primitives
+
+The regulation primitives are built-in as well, a network configuration enables the regulation primitives from the
+genesis of the network, it is used by the licensed parties to control the system risk which is under monitoring and
+regulation. The primitives should involve the account Locking/Unlocking, asset Locking/Unlocking,
+market Opening/Closing/ etc...
+
 ### Exchange Primitives
 
 Native exchange primitives enable the creation and management of decentralized exchanges
