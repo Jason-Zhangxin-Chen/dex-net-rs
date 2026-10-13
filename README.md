@@ -48,10 +48,11 @@ retrieval of historical data. The chain database, on the other hand, is optimize
 access to the most recent blocks, enabling quick validation and processing of new
 transactions.
 
-### Virtual Machine (optional)
+### No Virtual Machine
 
-The smart contract execution environment is under discussion, as flawed smart contracts can
-expose many attack vectors. Whether to support smart contracts at all is still being debated.
+For the most performance-critical financial primitives, a native execution engine is vastly superior to a general
+purpose smart contract VM, thus we decided not to include any virtual machine execution context for smart contracts.
+The messages in a block is processed by precompiled contracts to manipulate the underlying world state.
 
 ### State Engine
 
