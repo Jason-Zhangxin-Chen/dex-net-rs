@@ -3,6 +3,7 @@
 There three account models each of which provides different finance primitives.
 
 ## External Account
+
 External account represents the user who owns the private key of the corresponding account address.
 It can be used by a human, a trade agent to issue the transfer and trade intent. It can be used by
  a licensed party to mint or burn assets from the RWA Pool Account that derived from it as well. It
@@ -34,6 +35,7 @@ It can be used by a human, a trade agent to issue the transfer and trade intent.
  ```
 
 ## RWA Pool Account
+
 RWA pool account stores the meta data of a digital asset pool, it is similar as an ERC-20 token contract account
 in ETH, but it does not track the proportions of each user of that asset, as the proportions are distributed
 into each external account for parallel processing.
@@ -66,4 +68,56 @@ pub RWAPoolAccount{
 ```
 
 ## CLOB Account
+
 CLOB account stores the orderbook of a specific market with initial configurations.
+
+```text
+// Book metadata (one key per book)
+ob/<book_id>/meta → {
+    symbol: "BTC-USDC",
+    base_token: id,
+    quote_token: id,
+    config: { tick_size, lot_size, maker_fee, taker_fee, ... },
+    best_bid_price: u64 | null,
+    best_ask_price: u64 | null,
+    bid_level_count: u32,
+    ask_level_count: u32,
+    total_bid_qty: u128,
+    total_ask_qty: u128,
+}
+
+// Price level (one key per level per side)
+ob/<book_id>/bid/<price> → {
+    price: u64,
+    total_qty: u128,
+    order_count: u32,
+    head_order_id: u64,   // oldest order (time priority)
+    tail_order_id: u64,   // newest order
+    next_price: u64 | null,  // next lower price (for bids)
+    prev_price: u64 | null,  // next higher price (for bids)
+}
+
+ob/<book_id>/ask/<price> → {
+    price: u64,
+    total_qty: u128,
+    order_count: u32,
+    head_order_id: u64,
+    tail_order_id: u64,
+    next_price: u64 | null,  // next higher price (for asks)
+    prev_price: u64 | null,  // next lower price (for asks)
+}
+
+// Order (one key per order)
+ob/<book_id>/order/<order_id> → {
+    order_id: u64,
+    side: Bid | Ask,
+    price: u64,
+    quantity: u128,       // remaining quantity
+    original_qty: u128,
+    owner: Address,
+    next_order_id: u64 | null,  // next in time queue at this level
+    prev_order_id: u64 | null,  // prev in time queue at this level
+    timestamp: u64,
+    status: Open | PartiallyFilled | Filled | Cancelled,
+}
+```
