@@ -117,7 +117,7 @@ TrailingStop, Pegged, MarketToLimit, and ReserveOrder.
 
 ## Consensus Layer
 
-A modern BFT consensus protocol with several innovations: optimal view forwarding, pipelined
+A modern BFT consensus protocol with several innovations: optimistic view forwarding, pipelined
 and round-reduced execution, and parallelized voting.
 
 ### Minimmit BFT
@@ -140,6 +140,11 @@ network failures and topology changes.
 
 Because most voting messages in a consensus instance share the same content, a batch
 aggregation layer is introduced between the messaging layer and the consensus layer to reduce
-the relaying capacity consumed and the processing power required by the consensus engine. The
+the consumed relaying bandwidth and the processing power of the consensus engine. The message
 aggregation is inspired by [BLS12-381](https://zodl.com/new-snark-curve/) and
 [Fast Subgroup Checks for BLS12-381](https://eprint.iacr.org/2019/814.pdf).
+
+
+## Contribution
+Please create any issues or PRs as you want, as a community, we are all here to help to build a next generation DEX.
+Please contact: ai.ironman.jason@gmail.com or leave any message on the repo's discussion board for your interests.
