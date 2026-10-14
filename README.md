@@ -4,10 +4,20 @@
 
 # dex-net-rs
 
-A modern blockchain network in Rust with built-in DEX primitives as first-class citizens. Licensed parties can mint
-RWA and stablecoins on top of the network via native primitives, the regulation parties can block those suspected accounts,
-the licensed parties can also create market places (CLOB execution and settlement components) for assets, derivative,
-prediction product trading with native primitives in the TXN message.
+A modern super fast blockchain network with built-in DEX primitives and regulation primitives as the 1st class citizen.
+The adopted protocol designs are inspired by the layer1 innovations of the last 3 years, mainly focus on the peer to
+peer messaging, the state management engine and the pipeline parallelized consensus protocols. With proven profiling
+report of those ideas exposed by the research and production deployment, dex-net-rs targets to 200ms block period and
+100,000 TPS in a WAN with 100 committee seats.
+
+In the use case end, a licensed parties can mint RWA and stablecoins on top of the network via native primitives,
+the regulation parties can block those suspected accounts, the licensed parties can also create market places for
+ spot, derivative, and prediction products. The settlement of the trades use the specified asset nominated by the
+ market place, either a wrapped USDC, or the native stablecoins minted in this blockchain. As all of this finance
+ primitives are embedded in the execution layer protocol, it makes the settlement be simple as well without any delay.
+ Moreover that, as it is a decentralized network without any centralized service and nodes, a 7*24 operation mode is
+ offered by the network, also the attack vectors of a CEX is no longer valid in this network, as all TXNs and primitives
+ are trade intent which is signed by the user's key.
 
 > **Status: early development.** The workspace currently holds the foundation crates only;
 > the layers described below are the design target.
