@@ -4,20 +4,20 @@
 
 # dex-net-rs
 
-A modern super fast blockchain network with built-in DEX primitives and regulation primitives as the 1st class citizen.
-The adopted protocol designs are inspired by the layer1 innovations of the last 3 years, mainly focus on the peer to
-peer messaging, the state management engine and the pipeline parallelized consensus protocols. With proven profiling
-report of those ideas exposed by the research and production deployment, dex-net-rs targets to 200ms block period and
-100,000 TPS in a WAN with 100 committee seats.
+A modern, ultra-fast blockchain network with built-in DEX and regulatory primitives as first-class citizens.
 
-In the use case end, a licensed parties can mint RWA and stablecoins on top of the network via native primitives,
-the regulation parties can block those suspected accounts, the licensed parties can also create market places for
- spot, derivative, and prediction products. The settlement of the trades use the specified asset nominated by the
- market place, either a wrapped USDC, or the native stablecoins minted in this blockchain. As all of this finance
- primitives are embedded in the execution layer protocol, it makes the settlement be simple as well without any delay.
- Moreover that, as it is a decentralized network without any centralized service and nodes, a 7*24 operation mode is
- offered by the network, also the attack vectors of a CEX is no longer valid in this network, as all TXNs and primitives
- are trade intent which is signed by the user's key.
+Its protocol design draws on Layer 1 innovations from the past three years, focusing mainly on peer-to-peer messaging,
+ the state-management engine, and pipelined, parallelized consensus protocols. Based on profiling results demonstrated
+ in both research and production deployments of those innovations, dex-net-rs targets a 200 ms block time and
+ 100,000 TPS over a WAN with a 100-seat committee.
+
+On the use-case side, licensed parties can mint real-world assets (RWAs) and stablecoins on the network through
+native primitives, while regulators can block suspected accounts. Licensed parties can also create marketplaces
+for spot, derivatives, and prediction products. Trade settlement uses the asset specified by the marketplace—either
+ wrapped USDC or native stablecoins minted on the blockchain. Because all these financial primitives are embedded
+  in the execution-layer protocol, settlement is simple and immediate. Moreover, as a decentralized network with
+  no centralized services, it offers 24/7 operation, and the attack vectors of a CEX no longer apply: all transactions
+   and primitives are trade intents signed by the user’s key.
 
 > **Status: early development.** The workspace currently holds the foundation crates only;
 > the layers described below are the design target.
