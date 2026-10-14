@@ -72,11 +72,17 @@ pub RWAPoolAccount{
 CLOB account stores the orderbook of a specific market with initial configurations.
 
 ```text
+// Market Type resolves the settlement precompile contracts.
+enum MarketType {
+    Spot{base_token: id, quote_token:id},
+    Perp{settlement_token: id},
+    Prediction{settlement_token: id},
+}
+
 // Book metadata (one key per book)
 ob/<book_id>/meta → {
     symbol: "BTC-USDC",
-    base_token: id,
-    quote_token: id,
+    market_type: market_type,
     config: { tick_size, lot_size, maker_fee, taker_fee, ... },
     best_bid_price: u64 | null,
     best_ask_price: u64 | null,
