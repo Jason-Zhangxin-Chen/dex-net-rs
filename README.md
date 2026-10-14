@@ -144,7 +144,6 @@ the consumed relaying bandwidth and the processing power of the consensus engine
 aggregation is inspired by [BLS12-381](https://zodl.com/new-snark-curve/) and
 [Fast Subgroup Checks for BLS12-381](https://eprint.iacr.org/2019/814.pdf).
 
-
 ## Contribution
 Please create any issues or PRs as you want, as a community, we are all here to help to build a next generation DEX.
 Please contact: ai.ironman.jason@gmail.com or leave any message on the repo's discussion board for your interests.
