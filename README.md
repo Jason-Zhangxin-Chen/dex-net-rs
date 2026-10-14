@@ -5,12 +5,15 @@
 # dex-net-rs
 
 A modern blockchain network in Rust with built-in DEX primitives as first-class citizens. Licensed parties can mint
-RWA and stablecoins on top the network via native primitives, the regulation parties can block those suspected accounts,
+RWA and stablecoins on top of the network via native primitives, the regulation parties can block those suspected accounts,
 the licensed parties can also create market places (CLOB execution and settlement components) for assets, derivative,
 prediction product trading with native primitives in the TXN message.
 
 > **Status: early development.** The workspace currently holds the foundation crates only;
 > the layers described below are the design target.
+
+## Account Models
+The account models can be find from [Account Model](./doc/AccountModel.md).
 
 ## P2P Network Layer
 
