@@ -23,7 +23,11 @@ for spot, derivatives, and prediction products. Trade settlement uses the asset 
 > the layers described below are the design target.
 
 ## Account Models
-The account models can be find from [Account Model](./doc/AccountModel.md).
+The account models:
+ - [External Account](./doc/AccountExternal.md).
+ - [Oracle Account](./doc/AccountOracle.md).
+ - [Orderbook Account](./doc/AccountOrderbook.md).
+ - [RWA Pool Account](./doc/AccountRWAPool.md).
 
 ## P2P Network Layer
 
