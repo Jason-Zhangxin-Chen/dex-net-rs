@@ -28,6 +28,7 @@ The account models:
  - [Oracle Account](./doc/AccountOracle.md).
  - [RWA Pool Account](./doc/AccountRWAPool.md).
  - [Spot Orderbook Account](./doc/AccountOrderbookSpot.md).
+ - [Perp Orderbook Account](./doc/AccountOrderbookPerp.md).
 
 ## P2P Network Layer
 
