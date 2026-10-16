@@ -26,8 +26,8 @@ for spot, derivatives, and prediction products. Trade settlement uses the asset 
 The account models:
  - [External Account](./doc/AccountExternal.md).
  - [Oracle Account](./doc/AccountOracle.md).
- - [Orderbook Account](./doc/AccountOrderbook.md).
  - [RWA Pool Account](./doc/AccountRWAPool.md).
+ - [Spot Orderbook Account](./doc/AccountOrderbookSpot.md).
 
 ## P2P Network Layer
 
@@ -78,7 +78,9 @@ The messages in a block is processed by precompiled contracts to manipulate the 
 
 A deterministic state engine replaces the legacy Merkle Patricia Trie (MPT) with a more
 efficient and scalable data structure for global state management, inspired by LayerZero
-Labs' paper [QMDB: Quick Merkle Database](https://arxiv.org/pdf/2501.05262).
+Labs' paper [QMDB: Quick Merkle Database](https://arxiv.org/pdf/2501.05262). It is the core of the state management
+of the entire blockchain, the QMDB computes the entire world state block by block in an append-only way with a
+merkle mountain range mechanism which is the source of the blast fast state aggregation.
 
 ### Asset Primitives
 
