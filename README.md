@@ -26,8 +26,8 @@ for spot, derivatives, and prediction products. Trade settlement uses the asset 
 The account models:
  - [External Account](./doc/AccountExternal.md).
  - [Oracle Account](./doc/AccountOracle.md).
- - [Orderbook Account](./doc/AccountOrderbook.md).
  - [RWA Pool Account](./doc/AccountRWAPool.md).
+ - [Spot Orderbook Account](./doc/AccountOrderbookSpot.md).
 
 ## P2P Network Layer
 
