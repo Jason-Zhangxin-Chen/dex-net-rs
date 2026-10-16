@@ -24,6 +24,7 @@ Spot orderbook account holds the state of the spot market.
 //!   ob/<address>/bid/<price>   -> {PriceLevel}
 //!   ob/<address>/ask/<price>   -> {PriceLevel}
 //!   ob/<address>/order/<tx_hash> -> {Order}
+//! The schema can be tuned for performance gain, as some of them might introduce write amplification.
 
 // ---------------------------------------------------------------------------
 // Shared types (move to `clob/common.rs` when the other books are split out)
