@@ -152,7 +152,7 @@ pub struct PerpMarket {
     settlement_token: TokenID,
     /// Oracle account address that publishes the index price.
     index_oracle: Address,
-    /// Funding interval in seconds, e.g. 8h.
+    /// Funding interval in blocks, e.g. a period of 8h in blocks.
     funding_interval: u64,
     /// Current funding rate, scaled, signed.
     funding_rate: i64,
@@ -223,6 +223,12 @@ pub struct PerpBookAccount {
 // ---------------------------------------------------------------------------
 
 /// Aggregate + entry view of the perp book's position state.
+///
+/// Persistent state lives in the doubly-linked list (`head_owner` /
+/// `tail_owner` plus `prev_owner` / `next_owner` on each position). The
+/// `positions` map is populated from that list at load time so settlement,
+/// funding, and risk can do O(1) random access by owner without walking
+/// the list on every lookup.
 #[repr(C)]
 pub struct PositionBook {
     /// Number of non-zero positions currently open in this book.
@@ -235,12 +241,9 @@ pub struct PositionBook {
     total_long_notional: Notional,
     /// Sum of short notional at entry.
     total_short_notional: Notional,
-    /// Cumulative open interest in contracts. Equal to
-    /// `total_long_size` when the book is balanced, kept separately so
-    /// mismatches surface during reconciliation.
+    /// Cumulative open interest in contracts.
     open_interest: Qty,
-    /// Sum of all positive unrealized PnL across positions. Refreshed by
-    /// the risk engine.
+    /// Sum of all positive unrealized PnL across positions.
     total_unrealized_pnl: i128,
     /// Sum of all isolated margin locked by positions in this book.
     total_isolated_margin: Balance,
@@ -249,11 +252,17 @@ pub struct PositionBook {
     /// Number of positions that have been ADL'd.
     adl_count: u32,
 
-    /// The populated position entries from the underlying QMDB:
-    /// key: "perp/<address>/position/<owner>" -> value: {PerpPosition};
-    ///
-    /// Present once the book is created. Every crossing fill can lock a
-    /// contract for any owner, so the map is always `Some`.
+    // ---- Persistent linked list (source of truth in QMDB) ----
+    /// Head of the position linked list. `None` when no open positions.
+    head_owner: Option<Address>,
+    /// Tail of the position linked list. `None` when no open positions.
+    tail_owner: Option<Address>,
+
+    // ---- Populated in-memory view ----
+    /// The populated position entries, built by walking the linked list
+    /// from `head_owner` and following `next_owner`. Not persisted as a
+    /// standalone structure; it mirrors the linked list for O(1) lookup.
+    /// key: perp/<address>/position/<owner> -> value: {PerpPosition};
     positions: Map<Address, PerpPosition>,
 }
 
@@ -265,37 +274,42 @@ pub struct PositionBook {
 /// position. The entry is removed when `size` reaches zero.
 #[repr(C)]
 pub struct PerpPosition {
-    /// The position owner.
+    /// The position owner. Also the key under which this entry is stored.
     owner: Address,
-    /// Long or Short. Flipped when an opposing fill exceeds `size`.
+    /// Previous open position owner in the linked list. `None` when head.
+    prev_owner: Option<Address>,
+    /// Next open position owner in the linked list. `None` when tail.
+    next_owner: Option<Address>,
+
+    /// The position side.
     side: PositionSide,
-    /// Open contract count, always non-negative. Zero means closed.
+    /// The net quantity of the aggregated positions.
     size: Qty,
-    /// Average entry price.
+    /// The entry price of the net positions, weighted average cost of the opening contracts.
     entry_price: Price,
-    /// Margin mode.
+    /// The margin mode of the position.
     margin_mode: MarginMode,
-    /// Isolated margin locked for this position. Unused when cross.
+    /// The isolated margin when with isolated mode.
     isolated_margin: Balance,
-    /// Cumulative funding index paid or received by this position.
+    /// The value of cumulative_funding_index at the last time this position was touched.
     funding_index: i128,
-    /// Last funding time applied.
+    /// The block height that last funding happens on this position.
     last_funding_time: u64,
-    /// Current liquidation price under the current margin mode.
+    /// The mark price at which a position's equity falls to exactly its maintenance margin requirement.
     liquidation_price: Price,
-    /// Realized PnL over the position's lifetime.
+    /// The realized PnL of the trader.
     realized_pnl: i128,
-    /// Mark-to-market unrealized PnL, refreshed by the risk engine.
+    /// The un-realized PnL of the trader.
     unrealized_pnl: i128,
-    /// Effective leverage under the current margin, scaled by 1e4.
+    /// The leverage rate derived per position.
     leverage: u32,
-    /// True once the position has been liquidated or fully ADL'd.
+    /// If the trader is liquidated by the exchange.
     is_liquidated: bool,
-    /// Last event applied to this position.
+    /// The last position event type.
     last_event: PositionEvent,
-    /// Block height when the position was opened.
+    /// The block height on which the 1st position happens.
     opened_at: u64,
-    /// Block height of the last update.
+    /// The block height on which the last update happens.
     updated_at: u64,
 }
 
@@ -358,3 +372,4 @@ pub struct Order {
     /// True if the order originated from the liquidation engine.
     is_liquidation: bool,
 }
+```
