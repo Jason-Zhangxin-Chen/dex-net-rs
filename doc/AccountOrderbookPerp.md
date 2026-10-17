@@ -216,7 +216,140 @@ pub struct PerpBookAccount {
     // the L3 position view; reading only the counters gives the OI view
     // without touching the entry sub-tree.
     position_book: PositionBook,
+
+    // ---- Embedded clearing vault book ----
+    clearing_vault: ClearingVault,
 }
+
+// ---------------------------------------------------------------------------
+// Embedded clearinghouse vault book
+// ---------------------------------------------------------------------------
+
+/// The token used as collateral in this book.
+type Balance = u128;
+
+/// Last event applied to a vault entry.
+#[repr(u8)]
+pub enum VaultEvent {
+    /// Margin deposited into the book.
+    Deposited = 0,
+    /// Margin withdrawn from the book.
+    Withdrawn = 1,
+    /// Margin locked as isolated margin for a new or increased position.
+    MarginLocked = 2,
+    /// Margin released when an isolated position is reduced or closed.
+    MarginReleased = 3,
+    /// Realized PnL credited or debited.
+    PnlRealized = 4,
+    /// Funding credited or debited.
+    FundingSettled = 5,
+    /// Position liquidated; margin seized to cover the shortfall / surplus.
+    Liquidated = 6,
+    /// ADL executed; margin and PnL settled at bankruptcy price.
+    AdlSettled = 7,
+    /// Insurance fund credited from a liquidation surplus.
+    InsuranceCredited = 8,
+    /// Insurance fund debited to cover a liquidation shortfall.
+    InsuranceDebited = 9,
+}
+
+/// The clearinghouse vault book. Traders deposit the settlement token into
+/// the book; the vault bookkeeps each trader's claim on the pool as
+/// `free_margin` + `locked_isolated_margin` + `pending_withdrawal`.
+///
+/// Persistent state lives in the doubly-linked list (`head_owner` /
+/// `tail_owner` plus `prev_owner` / `next_owner` on each entry). The
+/// `vaults` map is populated from that list at load time so settlement,
+/// funding, and risk can do O(1) random access by owner.
+#[repr(C)]
+pub struct ClearingVault {
+    /// Number of non-empty vault entries.
+    vault_owner_count: u32,
+
+    // ---- Aggregate balances ----
+    /// Sum of `free_margin` across all vaults.
+    total_free_margin: Balance,
+    /// Sum of `locked_isolated_margin` across all vaults. Should equal
+    /// the sum of `isolated_margin` across all open isolated positions.
+    total_locked_margin: Balance,
+    /// Sum of `pending_withdrawal` across all vaults.
+    total_pending_withdrawal: Balance,
+
+    // ---- Lifetime flow counters ----
+    /// Cumulative settlement tokens deposited over the book's lifetime.
+    total_deposited: Balance,
+    /// Cumulative settlement tokens withdrawn over the book's lifetime.
+    total_withdrawn: Balance,
+    /// Net realized PnL credited to vaults over the book's lifetime.
+    net_realized_pnl: i128,
+    /// Net funding paid/received across vaults over the book's lifetime.
+    net_funding: i128,
+
+    // ---- Insurance fund ----
+    /// Balance held by the book as the insurance fund. Funded by
+    /// liquidation surpluses and debited on liquidation shortfalls and ADL.
+    insurance_fund_balance: Balance,
+
+    // ---- Persistent linked list (source of truth in QMDB) ----
+    /// Head of the vault linked list. `None` when no non-empty vaults.
+    head_owner: Option<Address>,
+    /// Tail of the vault linked list. `None` when no non-empty vaults.
+    tail_owner: Option<Address>,
+
+    // ---- Populated in-memory view ----
+    /// Built by walking the linked list from `head_owner` and following
+    /// `next_owner`. Not persisted as a standalone structure.
+    /// key: perp/<address>/vault/<owner> -> value: {VaultEntry};
+    vaults: Map<Address, VaultEntry>,
+}
+
+/// Clearing vault entry:
+/// key: perp/<address>/vault/<owner> -> value: {VaultEntry};
+///
+/// The `free_margin + locked_isolated_margin + pending_withdrawal` sum is
+/// the trader's claim on the book's pooled settlement-token balance. It
+/// must always equal the actual per-owner balance attributable in the
+/// book's settlement-token ledger.
+#[repr(C)]
+pub struct VaultEntry {
+    /// The trader whose margin this entry tracks. Also the key under which
+    /// the entry is stored.
+    owner: Address,
+
+    /// Previous non-empty vault owner in the linked list. `None` when head.
+    prev_owner: Option<Address>,
+    /// Next non-empty vault owner in the linked list. `None` when tail.
+    next_owner: Option<Address>,
+
+    // ---- Balances ----
+    /// Free, unlocked margin. Available for new isolated positions, for
+    /// cross positions to draw on, or for withdrawal.
+    free_margin: Balance,
+    /// Margin currently locked as isolated margin on positions. Must equal
+    /// Σ `isolated_margin` of this owner's open isolated positions.
+    locked_isolated_margin: Balance,
+    /// Withdrawals submitted but not yet finalized.
+    pending_withdrawal: Balance,
+
+    // ---- Lifetime flow counters (per owner) ----
+    /// Cumulative settlement tokens deposited by this trader.
+    total_deposited: Balance,
+    /// Cumulative settlement tokens withdrawn by this trader.
+    total_withdrawn: Balance,
+    /// Net realized PnL credited to this vault over its lifetime.
+    realized_pnl: i128,
+    /// Net funding paid/received by this trader over its lifetime.
+    net_funding: i128,
+
+    // ---- Metadata ----
+    /// Last event applied to this vault.
+    last_event: VaultEvent,
+    /// Block height of first deposit.
+    opened_at: u64,
+    /// Block height of the last update.
+    updated_at: u64,
+}
+
 
 // ---------------------------------------------------------------------------
 // Embedded position book
