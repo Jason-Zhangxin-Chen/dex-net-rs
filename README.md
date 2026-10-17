@@ -29,6 +29,7 @@ The account models:
  - [RWA Pool Account](./doc/AccountRWAPool.md).
  - [Spot Orderbook Account](./doc/AccountOrderbookSpot.md).
  - [Perp Orderbook Account](./doc/AccountOrderbookPerp.md).
+ - [Prediction Orderbook Account](./doc/AccountOrderbookPrediction.md).
 
 ## P2P Network Layer
 
